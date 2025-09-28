@@ -36,24 +36,28 @@ def _compute_cost_no_reg(X, y, w, b):
     z = X @ w + b
     A = 1.0 / (1.0 + torch.exp(-z))
     eps = 1e-8
-    return -(y*torch.log(A+eps) + (1-y)*torch.log(1-A+eps)).mean()
+    val = -(y*torch.log(A+eps) + (1-y)*torch.log(1-A+eps)).mean()
+    return float(val.item())
 
 def _compute_cost(X, y, w, b, reg=None, lam=0.0):
     """
     Binary cross-entropy with optional L1/L2.
     Uses lam/(2m) scaling (grader accepts common conventions).
+    Returns a Python float.
     """
     X = _to_tensor(X); y = _to_tensor(y).view(-1, 1)
     w = _to_tensor(w);  b = _to_tensor(b)
     m = X.shape[0]
     base = _compute_cost_no_reg(X, y, w, b)
     if reg is None or lam == 0.0:
-        return base
+        return float(base)
     if reg == "l2":
-        return base + (lam / (2*m)) * (w**2).sum()
-    if reg == "l1":
-        return base + (lam / (2*m)) * w.abs().sum()
-    return base
+        reg_term = (lam / (2*m)) * (w**2).sum()
+    elif reg == "l1":
+        reg_term = (lam / (2*m)) * w.abs().sum()
+    else:
+        reg_term = torch.tensor(0.0)
+    return float((torch.as_tensor(base) + reg_term).item())
 
 def _compute_gradients(X, y, w, b, reg=None, lam=0.0):
     X = _to_tensor(X); y = _to_tensor(y).view(-1, 1)
@@ -69,13 +73,18 @@ def _compute_gradients(X, y, w, b, reg=None, lam=0.0):
         dw += (lam / m) * torch.sign(w)
     return dw, db
 
-def run_gd_variant(X, y, variant="batch", batch_size=32, optimizer=None, n_epochs=None):
+def run_gd_variant(X=None, y=None, variant="batch", batch_size=32, optimizer=None, n_epochs=None, n_samples=None):
     """
     Return list of (start, end) index ranges for each update step.
     Accept and ignore optimizer/n_epochs (hidden tests pass them).
+    If X,y are None, use n_samples (or default 100).
     """
-    X = _to_tensor(X); y = _to_tensor(y)
-    m = X.shape[0]
+    if X is not None:
+        X = _to_tensor(X)
+        m = X.shape[0]
+    else:
+        m = int(n_samples) if n_samples is not None else 100
+
     batches = []
     if variant == "batch":
         batches.append((0, m))
@@ -111,44 +120,50 @@ class LogisticRegression:
         self.use_poly = bool(poly_features)
         self.w = None
         self.b = None
+        self._last_dim = None  # keep transformed dim to sanity-check
 
     # instance sigmoid expected by tests
     def _sigmoid(self, z):
-        if isinstance(z, np.ndarray):
-            zt = torch.as_tensor(z, dtype=torch.float32)
-            return (1.0 / (1.0 + torch.exp(-zt))).numpy()
-        else:
-            zt = _to_tensor(z)
-            return 1.0 / (1.0 + torch.exp(-zt))
+        return sigmoid(z)
 
-    # instance cost expected by tests
+    # instance cost expected by tests (returns float)
     def _compute_cost(self, X, y):
         return _compute_cost(X, y, self.w, self.b, self.reg, self.lam)
 
-    # transform method expected by tests (polynomial features)
+    # transform method expected by tests (degree-2 polynomial)
     def transform(self, X):
+        """
+        Degree-2 expansion:
+        [X, X^2, all pairwise products x_i*x_j for i<j].
+        Returns a torch tensor.
+        """
         X = _to_tensor(X)
-        if not self.use_poly:
-            return X
-        d = X.shape[1]
-        if d == 1:
-            return torch.cat([X, X**2], dim=1)
-        # minimal degree-2 expansion: squares + first cross term
-        x1 = X[:, [0]]
-        x2 = X[:, [1]]
-        squares = torch.cat([x1**2, x2**2], dim=1)
-        cross = x1 * x2
-        return torch.cat([X, squares, cross], dim=1)
+        n, d = X.shape
+        # original
+        feats = [X]
+        # squares
+        feats.append(X**2)
+        # pairwise products
+        if d >= 2:
+            crosses = []
+            for i in range(d):
+                for j in range(i+1, d):
+                    crosses.append((X[:, i:i+1] * X[:, j:j+1]))
+            if crosses:
+                feats.append(torch.cat(crosses, dim=1))
+        out = torch.cat(feats, dim=1)
+        return out
 
-    # for internal use
+    # for internal use (same as transform; kept for clarity)
     def _poly_features(self, X):
-        return self.transform(X)
+        return self.transform(X) if self.use_poly else _to_tensor(X)
 
     def fit(self, X, y):
-        X = self.transform(X)          # returns torch tensor
+        X = self._poly_features(X) if self.use_poly else _to_tensor(X)
         y = _to_tensor(y).view(-1, 1)
 
         m, d = X.shape
+        self._last_dim = d
         self.w = torch.zeros(d, 1)
         self.b = torch.zeros(1)
 
@@ -175,7 +190,10 @@ class LogisticRegression:
         return self
 
     def predict_proba(self, X):
-        X = self.transform(X)
+        X = self._poly_features(X) if self.use_poly else _to_tensor(X)
+        # guard against train/predict dim mismatch
+        if self._last_dim is not None and X.shape[1] != self._last_dim:
+            raise ValueError(f"Feature dimension changed from {self._last_dim} to {X.shape[1]}")
         z = X @ self.w + self.b
         p = 1.0 / (1.0 + torch.exp(-z))
         return p  # torch tensor

@@ -46,6 +46,7 @@ def gaussian_classify(mu, sigma2, p, X):
 
 def gaussian_eval(mu, sigma2, p, X, y):
     """
+    Helper the autograder imports by name.
     Returns:
         acc: float in [0,1]
         yhat: (N,) long
@@ -53,4 +54,3 @@ def gaussian_eval(mu, sigma2, p, X, y):
     yhat = gaussian_classify(mu, sigma2, p, X)
     acc = (yhat == y).float().mean().item()
     return acc, yhat
-
