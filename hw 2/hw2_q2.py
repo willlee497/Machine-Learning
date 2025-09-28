@@ -1,5 +1,12 @@
 import torch
 
+__all__ = [
+    "gaussian_theta",
+    "gaussian_p",
+    "gaussian_classify",
+    "gaussian_eval",
+]
+
 def gaussian_theta(X, y):
     """
     MLE estimates for Gaussian NB per class/feature.
@@ -54,3 +61,4 @@ def gaussian_eval(mu, sigma2, p, X, y):
     yhat = gaussian_classify(mu, sigma2, p, X)
     acc = (yhat == y).float().mean().item()
     return acc, yhat
+
