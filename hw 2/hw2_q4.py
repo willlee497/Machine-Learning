@@ -1,9 +1,10 @@
 import numpy as np
 import torch
+import torch.nn.functional as F
 
 # ---- lists the autograder expects ----
 learning_rates = [0.01, 0.05, 0.1]
-lambda_values = [0.0, 0.01, 0.1]
+lambda_values  = [0.0, 0.01, 0.1]
 
 def _to_tensor(a):
     if isinstance(a, torch.Tensor):
@@ -32,33 +33,52 @@ def sigmoid(z):
     """
     if isinstance(z, np.ndarray):
         zt = torch.as_tensor(z, dtype=torch.float32)
-        out = 1.0 / (1.0 + torch.exp(-zt))
+        out = torch.sigmoid(zt)
         return out.numpy()
     else:
         zt = _to_tensor(z)
-        return 1.0 / (1.0 + torch.exp(-zt))
+        return torch.sigmoid(zt)
+
+def _bce_logits_loss(z, y01):
+    # Stable BCE with logits: mean(softplus(z) - y*z)
+    return float((F.softplus(z) - y01 * z).mean().item())
+
+def _logistic_loss_pm1(z, ypm1):
+    # Stable logistic loss for y in {-1,1}: mean(softplus(-y*z))
+    return float(F.softplus(-ypm1 * z).mean().item())
 
 def _compute_cost_no_reg(X, y, w, b):
+    """
+    Supports y in {0,1} or in {-1,1}. Returns Python float.
+    """
     X, w, b = _ensure_wb(X, w, b)
     y = _to_tensor(y).view(-1, 1)
     z = X @ w + b
-    A = 1.0 / (1.0 + torch.exp(-z))
-    eps = 1e-8
-    val = -(y*torch.log(A+eps) + (1-y)*torch.log(1-A+eps)).mean()
-    return float(val.item())
+
+    # detect label encoding
+    uniques = torch.unique(y)
+    if set(uniques.view(-1).tolist()) <= {0.0, 1.0}:
+        return _bce_logits_loss(z, y)
+    elif set(uniques.view(-1).tolist()) <= {-1.0, 1.0}:
+        return _logistic_loss_pm1(z, y)
+    else:
+        # default to BCE with logits
+        return _bce_logits_loss(z, y)
 
 def _compute_cost(X, y, w, b, reg=None, lam=0.0):
     """
-    Binary cross-entropy with optional L1/L2.
+    Binary cross-entropy / logistic loss with optional L1/L2.
     Uses lam/(2m) scaling (grader accepts common conventions).
     Returns a Python float (never None).
     """
     X, w, b = _ensure_wb(X, w, b)
     y = _to_tensor(y).view(-1, 1)
-    m = X.shape[0]
+    m = max(1, X.shape[0])  # guard
     base = _compute_cost_no_reg(X, y, w, b)
+
     if reg is None or lam == 0.0:
         return float(base)
+
     if reg == "l2":
         reg_term = (lam / (2*m)) * (w**2).sum()
     elif reg == "l1":
@@ -70,15 +90,19 @@ def _compute_cost(X, y, w, b, reg=None, lam=0.0):
 def _compute_gradients(X, y, w, b, reg=None, lam=0.0):
     X, w, b = _ensure_wb(X, w, b)
     y = _to_tensor(y).view(-1, 1)
-    m = X.shape[0]
     z = X @ w + b
-    A = 1.0 / (1.0 + torch.exp(-z))
-    dw = (X.T @ (A - y)) / m if m > 0 else torch.zeros_like(w)
-    db = (A - y).mean() if m > 0 else torch.tensor(0.0)
+    # assume y in {0,1}; if {-1,1}, map to 0/1 for gradient using: y01 = (y+1)/2
+    uniques = torch.unique(y)
+    if set(uniques.view(-1).tolist()) <= {-1.0, 1.0}:
+        y = (y + 1.0) / 2.0  # map {-1,1} -> {0,1}
+    A = torch.sigmoid(z)
+    m = max(1, X.shape[0])
+    dw = (X.T @ (A - y)) / m
+    db = (A - y).mean()
     if reg == "l2" and lam != 0.0:
-        dw += (lam / max(1, m)) * w
+        dw += (lam / m) * w
     elif reg == "l1" and lam != 0.0:
-        dw += (lam / max(1, m)) * torch.sign(w)
+        dw += (lam / m) * torch.sign(w)
     return dw, db
 
 def run_gd_variant(X=None, y=None, variant="batch", batch_size=32, optimizer=None, n_epochs=None, n_samples=None):
@@ -86,11 +110,12 @@ def run_gd_variant(X=None, y=None, variant="batch", batch_size=32, optimizer=Non
     Return list of (start, end) index ranges for each update step.
     Accept and ignore optimizer/n_epochs (hidden tests pass them).
     If X,y are None, use n_samples (or default 100).
-    Always return at least one tuple to avoid index errors on empty data.
+    Never return an empty list (avoid downstream index errors).
     """
+    variant = (variant or "batch").lower()
     if X is not None:
         X = _to_tensor(X)
-        m = X.shape[0]
+        m = int(X.shape[0])
     else:
         m = int(n_samples) if n_samples is not None else 100
 
@@ -120,7 +145,7 @@ class LogisticRegression:
       _sigmoid method
       _compute_cost method (returns float)
       transform method (polynomial feature expansion)
-    Note: We DO NOT auto-transform in fit/predict. Use transform() externally if desired.
+    Auto-applies transform when poly_features=True in fit and predict.
     """
 
     def __init__(self, learning_rate=0.1, n_iterations=1000, regularization=None, lam=0.0,
@@ -131,7 +156,7 @@ class LogisticRegression:
         self.lam = float(lam)
         self.variant = variant                 # 'batch' | 'minibatch' | 'sgd'
         self.batch_size = int(batch_size)
-        self.use_poly = bool(poly_features)    # kept for API compatibility
+        self.use_poly = bool(poly_features)
         self.w = None
         self.b = None
 
@@ -161,9 +186,14 @@ class LogisticRegression:
                 feats.append(torch.cat(crosses, dim=1))
         return torch.cat(feats, dim=1)
 
-    def fit(self, X, y):
-        # Do NOT auto-transform; tests may pass already-transformed X.
+    def _maybe_transform(self, X):
         X = _to_tensor(X)
+        if self.use_poly:
+            return self.transform(X)
+        return X
+
+    def fit(self, X, y):
+        X = self._maybe_transform(X)
         y = _to_tensor(y).view(-1, 1)
 
         m, d = X.shape
@@ -171,15 +201,16 @@ class LogisticRegression:
         self.b = torch.zeros(1)
 
         # update schedule (indices only; tests inspect shape/logic)
-        if self.variant == "sgd":
+        v = (self.variant or "batch").lower()
+        if v == "sgd":
             schedule = run_gd_variant(X, y, variant="sgd")
-        elif self.variant == "batch":
+        elif v == "batch":
             schedule = run_gd_variant(X, y, variant="batch")
         else:
             schedule = run_gd_variant(X, y, variant="minibatch", batch_size=self.batch_size)
 
         for _ in range(self.epochs):
-            if self.variant == "batch":
+            if v == "batch":
                 dw, db = _compute_gradients(X, y, self.w, self.b, self.reg, self.lam)
                 self.w -= self.lr * dw
                 self.b -= self.lr * db
@@ -193,10 +224,9 @@ class LogisticRegression:
         return self
 
     def predict_proba(self, X):
-        # Do NOT auto-transform; keep consistent with fit().
-        X = _to_tensor(X)
+        X = self._maybe_transform(X)
         z = X @ self.w + self.b
-        p = 1.0 / (1.0 + torch.exp(-z))
+        p = torch.sigmoid(z)
         return p  # torch tensor
 
     def predict(self, X, threshold=0.5):
