@@ -16,4 +16,3 @@ def gaussian_dataset(split="train", *args, **kwargs):
         X = torch.randn(50, 2)
         y = (X[:, 0] + X[:, 1] > 0).long()
     return X, y
-
