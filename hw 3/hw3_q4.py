@@ -391,7 +391,7 @@ y_val_log   = np.log1p(y_val)
 y_test_log  = np.log1p(y_test)
 
 skew_raw = float(y_train_series.skew())
-skew_log = float(y_train_log.skew())
+skew_log = float(pd.Series(y_train_log).skew())
 print(f"[Skew] SalePrice: {skew_raw:.3f} | log1p(SalePrice): {skew_log:.3f}")
 
 if SHOW_PLOTS:
@@ -425,7 +425,7 @@ def smear_back_transform(y_train_log, train_pred_log, X_test_b, w):
     resid = y_train_log - train_pred_log
     smear = float(np.mean(np.exp(resid)))
     z_test = X_test_b @ w
-    y_pred_back = smear * np.exp(z_test) - 1.0
+    y_pred_back = np.expm1(z_test) * smear
     return smear, y_pred_back
 
 # ------------------------------------------------------
