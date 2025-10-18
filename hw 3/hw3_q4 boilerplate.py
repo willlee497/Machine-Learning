@@ -59,15 +59,6 @@ def split_data(X, y, train_size=0.7, val_size=0.15, test_size=0.15, random_state
     """
     assert abs(train_size + val_size + test_size - 1.0) < 1e-8, \
         "train_size + val_size + test_size must sum to 1."
-    # First split: train vs temp (val+test)
-    X_train, X_temp, y_train, y_temp = train_test_split(
-        X, y, test_size=(1.0 - train_size), random_state=random_state
-    )
-    # Second split: val vs test (equal split of the temp chunk)
-    rel = test_size / (val_size + test_size)  # usually 0.5
-    X_val, X_test, y_val, y_test = train_test_split(
-        X_temp, y_temp, test_size=rel, random_state=random_state
-    )
 
     # Return copies to avoid SettingWithCopy issues
     return (X_train.copy(), X_val.copy(), X_test.copy(),
@@ -98,14 +89,13 @@ def impute_data(X_train, X_val, X_test, features, strategy="median"):
         X_train, X_val, X_test : copies with imputed values
     """
     X_train, X_val, X_test = X_train.copy(), X_val.copy(), X_test.copy()
-    if len(features) == 0:
-        return X_train, X_val, X_test
-    
+
     if strategy == "median":
         #TODO a(ii) calculate meadian
-        stats = X_train[features].median()
+        pass
     elif strategy == "mode":
-        stats = X_train[features].mode(dropna=True).iloc[0]
+        #TODO a(ii) calculate mean
+        pass
     else:
         raise ValueError("strategy must be 'median' or 'mode'")
 
@@ -113,9 +103,7 @@ def impute_data(X_train, X_val, X_test, features, strategy="median"):
     #X_train.loc[:, features] =
     #X_val.loc[:,   features] =
     #X_test.loc[:,  features] =
-    X_train.loc[:, features] = X_train[features].fillna(stats)
-    X_val.loc[:,   features] = X_val[features].fillna(stats)
-    X_test.loc[:,  features] = X_test[features].fillna(stats)
+
     return X_train, X_val, X_test
 
 # Numerical imputation with median
@@ -148,7 +136,7 @@ def zscore_transform(X, mean, std):
     Apply z-score normalization to X using given mean and std.
     Z-score is computed as: z = (x - mean) / std
     """
-    Z = (X - mean) / std
+
     return Z
 
 
@@ -208,8 +196,7 @@ def ols_solve_predict(X_train_b, y_train, X_test_b):
         y_pred    : Predictions on X_test_b
     """
     #TODO a(iii) Implement OLS. You can use np.linalg.pinv for this
-    w_ols = np.linalg.pinv(X_train_b) @ y_train
-    y_pred = X_test_b @ w_ols
+
     return w_ols, y_pred
 
 w_ols, y_pred_ols = ols_solve_predict(X_train_b, y_train, X_test_b)
@@ -229,11 +216,7 @@ def ridge_precompute(X_train_b, y_train):
     Compute matrices for closed-form ridge regression.
     Returns: I, XtX, Xty
     """
-    d = X_train_b.shape[1]
-    I = np.eye(d, dtype=np.float64)
-    I[0, 0] = 0.0  # do NOT penalize bias
-    XtX = X_train_b.T @ X_train_b
-    Xty = X_train_b.T @ y_train
+
     return I, XtX, Xty
 
 #TODO b(i) Calculate w_ridge and y_pred_ridge
@@ -241,9 +224,7 @@ def ridge_solve_predict(XtX, Xty, I, best_lambda, X_test_b):
     """
     Solve ridge closed-form weights and return predictions.
     """
-    A = XtX + best_lambda * I
-    w_ridge = np.linalg.solve(A, Xty)  # solve instead of invert
-    y_pred_ridge = X_test_b @ w_ridge
+
     return w_ridge, y_pred_ridge
 
 I, XtX, Xty = ridge_precompute(X_train_b, y_train)
@@ -302,8 +283,7 @@ def compute_gradient(X, y, w):
     """
     Compute the gradient of (1/n) * ||Xw - y||^2.
     """
-    n = X.shape[0]
-    grad = (2.0 / n) * (X.T @ (X @ w - y))
+
     return grad
 
 #TODO c(i) implement early stopping
@@ -314,7 +294,8 @@ def check_early_stop(w, w_prev, tol):
     Returns True if early stopping should trigger.
     """
 
-    return np.linalg.norm(w - w_prev, ord=np.inf) < tol
+    pass
+
 
 def ista_lasso(X, y, alpha, n_iterations, lambda_val, tol=1e-8):
     """
@@ -386,9 +367,7 @@ print("\n[Top-10 |Lasso weights|]\n", top10)
 
 y_train_series = pd.Series(y_train)
 #TODO d(i) log transform the y_train_series. You can use np.log1p for this.
-y_train_log = np.log1p(y_train)
-y_val_log   = np.log1p(y_val)
-y_test_log  = np.log1p(y_test)
+y_train_log =
 
 skew_raw = float(y_train_series.skew())
 skew_log = float(y_train_log.skew())
@@ -422,10 +401,7 @@ def smear_back_transform(y_train_log, train_pred_log, X_test_b, w):
         smear : smearing correction factor
         y_pred_back : back-transformed predictions on test set
     """
-    resid = y_train_log - train_pred_log
-    smear = float(np.mean(np.exp(resid)))
-    z_test = X_test_b @ w
-    y_pred_back = smear * np.exp(z_test) - 1.0
+
     return smear, y_pred_back
 
 # ------------------------------------------------------
@@ -440,9 +416,7 @@ print("------------------------------------------------------")
 #y_train_log =
 #y_val_log   =
 #y_test_log  =
-y_train_log = np.log1p(y_train)
-y_val_log   = np.log1p(y_val)
-y_test_log  = np.log1p(y_test)
+
 # Precompute for log target (Xty depends on y)
 I, XtX, Xty_log = ridge_precompute(X_train_b, y_train_log)
 
