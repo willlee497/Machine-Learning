@@ -86,6 +86,9 @@ class KMeans:
                 break
 
             self.cluster_centers_ = new_centers
+        
+        #store final labels for the training data
+        self.labels_ = labels
         return self.cluster_centers_
 
     def predict(self, X: np.ndarray) -> np.ndarray:
