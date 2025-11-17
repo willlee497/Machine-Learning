@@ -1,0 +1,629 @@
+\documentclass{article}
+    \usepackage[margin=1in]{geometry}
+    \usepackage{hyperref}
+    \usepackage{amsmath,amsfonts,amssymb,amsthm,commath,dsfont}
+    \usepackage{bm}
+    \usepackage{enumitem}
+    \usepackage{framed}
+    \usepackage{xspace}
+    \usepackage{microtype}
+    \usepackage{float}
+    \usepackage[round]{natbib}
+    \usepackage{cleveref}
+    \usepackage[dvipsnames]{xcolor}
+    \usepackage{graphicx}
+    \usepackage{listings}
+    \usepackage[breakable]{tcolorbox}
+    \tcbset{breakable}
+    \usepackage{mathtools}
+    \usepackage{autonum}
+    \usepackage{comment}
+    \usepackage{hyperref}
+    \usepackage{amsmath}
+    \usepackage{algorithm}
+    \usepackage{algorithmic}
+    \newcommand{\liangyan}[1]{\textcolor{blue}{[{\bf Liangyan:} #1]}}
+
+    \def\b1{\boldsymbol{1}}
+    \newcommand{\colbar}{\rule[-3mm]{.3mm}{1.5em}}
+    \newcommand{\rowbar}{\rule[.5ex]{1.5em}{.3mm}}
+    \newcommand{\francis}[1]{{\color{blue}#1}}
+    \DeclareMathOperator{\rank}{rank}
+    \def\balpha{\boldsymbol{\alpha}}
+    \newcommand{\yb}[1]{{\color{blue} #1}}
+
+    % following loops. stolen from djhsu
+    \def\ddefloop#1{\ifx\ddefloop#1\else\ddef{#1}\expandafter\ddefloop\fi}
+    % \bbA, \bbB, ...
+    \def\ddef#1{\expandafter\def\csname bb#1\endcsname{\ensuremath{\mathbb{#1}}}}
+    \ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+    
+    % \cA, \cB, ...
+    \def\ddef#1{\expandafter\def\csname c#1\endcsname{\ensuremath{\mathcal{#1}}}}
+    \ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+    
+    % \vA, \vB, ..., \va, \vb, ...
+    \def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{#1}}}}
+    \ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\ddefloop
+    
+    % \valpha, \vbeta, ...,  \vGamma, \vDelta, ...,
+    \def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{\csname #1\endcsname}}}}
+    \ddefloop {alpha}{beta}{gamma}{delta}{epsilon}{varepsilon}{zeta}{eta}{theta}{vartheta}{iota}{kappa}{lambda}{mu}{nu}{xi}{pi}{varpi}{rho}{varrho}{sigma}{varsigma}{tau}{upsilon}{phi}{varphi}{chi}{psi}{omega}{Gamma}{Delta}{Theta}{Lambda}{Xi}{Pi}{Sigma}{varSigma}{Upsilon}{Phi}{Psi}{Omega}{ell}\ddefloop
+
+    \newcommand\T{{\scriptscriptstyle\mathsf{T}}}
+    \def\diag{\textup{diag}}
+    
+    \DeclareMathOperator*{\argmin}{arg\,min}
+    \DeclareMathOperator*{\argmax}{arg\,max}
+
+    \def\SPAN{\textup{span}}
+    \def\tu{\textup{u}}
+    \def\R{\mathbb{R}}
+    \def\E{\mathbb{E}}
+    \def\Z{\mathbb{Z}}
+    \def\be{\mathbf{e}}
+    \def\nf{\nabla f}
+    \def\veps{\varepsilon}
+    \def\cl{\textup{cl}}
+    \def\inte{\textup{int}}
+    \def\dom{\textup{dom}}
+    \def\Rad{\textup{Rad}}
+    \def\lsq{\ell_{\textup{sq}}}
+    \def\hcR{\widehat{\cR}}
+    \def\hcRl{\hcR_\ell}
+    \def\cRl{\cR_\ell}
+    \def\hcE{\widehat{\cE}}
+    \def\cEl{\cE_\ell}
+    \def\hcEl{\hcE_\ell}
+    \def\eps{\epsilon}
+    \def\1{\mathds{1}}
+    \newcommand{\red}[1]{{\color{red} #1}}
+    \newcommand{\blue}[1]{{\color{blue} #1}}
+    \def\srelu{\sigma_{\textup{r}}}
+    \def\vsrelu{\vec{\sigma_{\textup{r}}}}
+    \def\vol{\textup{vol}}
+
+    \newcommand{\ip}[2]{\left\langle #1, #2 \right \rangle}
+    \newcommand{\mjt}[1]{{\color{blue}\emph\textbf{[M:}~#1~\textbf{]}}}
+    \newcommand{\sahand}[1]{{\color{green}\emph\textbf{[Sah:}~#1~\textbf{]}}}
+
+    \newtheorem{fact}{Fact}
+    \newtheorem{lemma}{Lemma}
+    \newtheorem{claim}{Claim}
+    \newtheorem{proposition}{Proposition}
+    \newtheorem{theorem}{Theorem}
+    \newtheorem{corollary}{Corollary}
+    \newtheorem{condition}{Condition}
+    \theoremstyle{definition}
+    \newtheorem{definition}{Definition}
+    \theoremstyle{remark}
+    \newtheorem{remark}{Remark}
+    \newtheorem{example}{Example}
+            \newcommand{\bX}{{\boldsymbol X}}
+            \newcommand{\bW}{{\boldsymbol W}}
+            \newcommand{\bZ}{{\boldsymbol Z}}
+            
+            \newcommand{\bx}{{\boldsymbol x}}
+            \newcommand{\bv}{{\boldsymbol v}}
+            \newcommand{\bw}{{\boldsymbol w}}
+            \newcommand{\bmu}{{\boldsymbol \mu}}
+            \newcommand{\ba}{{\boldsymbol a}}
+            \newcommand{\bb}{{\boldsymbol b}}
+    % mathcal
+    \newcommand{\Ac}{\mathcal{A}}
+    \newcommand{\Bc}{\mathcal{B}}
+    \newcommand{\Cc}{\mathcal{C}}
+    \newcommand{\Dc}{\mathcal{D}}
+    \newcommand{\Ec}{\mathcal{E}}
+    \newcommand{\Fc}{\mathcal{F}}
+    \newcommand{\Gc}{\mathcal{G}}
+    \newcommand{\Hc}{\mathcal{H}}
+    \newcommand{\Ic}{\mathcal{I}}
+    \newcommand{\Jc}{\mathcal{J}}
+    \newcommand{\Kc}{\mathcal{K}}
+    \newcommand{\Lc}{\mathcal{L}}
+    \newcommand{\Mc}{\mathcal{M}}
+    \newcommand{\Nc}{\mathcal{N}}
+    \newcommand{\Oc}{\mathcal{O}}
+    \newcommand{\Pc}{\mathcal{P}}
+    \newcommand{\Qc}{\mathcal{Q}}
+    \newcommand{\Rc}{\mathcal{R}}
+    \newcommand{\Sc}{\mathcal{S}}
+    \newcommand{\Tc}{\mathcal{T}}
+    \newcommand{\Uc}{\mathcal{U}}
+    \newcommand{\Vc}{\mathcal{V}}
+    \newcommand{\Wc}{\mathcal{W}}
+    \newcommand{\Xc}{\mathcal{X}}
+    \newcommand{\Yc}{\mathcal{Y}}
+    \newcommand{\Zc}{\mathcal{Z}}
+    
+    % mathbb
+    \newcommand{\bxup}[1]{{\bx}^{({#1})}}
+    \newcommand{\yup}[1]{{y}^{({#1})}}
+
+    \newcommand{\Ab}{\mathbb{A}}
+    \newcommand{\Bb}{\mathbb{B}}
+    \newcommand{\Cb}{\mathbb{C}}
+    \newcommand{\Db}{\mathbb{D}}
+    \newcommand{\Eb}{\mathbb{E}}
+    \newcommand{\Fb}{\mathbb{F}}
+    \newcommand{\Gb}{\mathbb{G}}
+    \newcommand{\Hb}{\mathbb{H}}
+    \newcommand{\Ib}{\mathbb{I}}
+    \newcommand{\Jb}{\mathbb{J}}
+    \newcommand{\Kb}{\mathbb{K}}
+    \newcommand{\Lb}{\mathbb{L}}
+    \newcommand{\Mb}{\mathbb{M}}
+    \newcommand{\Nb}{\mathbb{N}}
+    \newcommand{\Ob}{\mathbb{O}}
+    \newcommand{\Pb}{\mathbb{P}}
+    \newcommand{\Qb}{\mathbb{Q}}
+    \newcommand{\Rb}{\mathbb{R}}
+    \newcommand{\Sb}{\mathbb{S}}
+    \newcommand{\Tb}{\mathbb{T}}
+    \newcommand{\Ub}{\mathbb{U}}
+    \newcommand{\Vb}{\mathbb{V}}
+    \newcommand{\Wb}{\mathbb{W}}
+    \newcommand{\Xb}{\mathbb{X}}
+    \newcommand{\Yb}{\mathbb{Y}}
+    \newcommand{\Zb}{\mathbb{Z}}
+    
+    % mathbf lowercase
+    \newcommand{\av}{\mathbf{a}}
+    \newcommand{\cv}{\mathbf{c}}
+    \newcommand{\dv}{\mathbf{d}}
+    \newcommand{\ev}{\mathbf{e}}
+    \newcommand{\fv}{\mathbf{f}}
+    \newcommand{\gv}{\mathbf{g}}
+    \newcommand{\hv}{\mathbf{h}}
+    \newcommand{\iv}{\mathbf{i}}
+    \newcommand{\jv}{\mathbf{j}}
+    \newcommand{\kv}{\mathbf{k}}
+    \newcommand{\lv}{\mathbf{l}}
+    \newcommand{\mv}{\mathbf{m}}
+    \newcommand{\nv}{\mathbf{n}}
+    \newcommand{\ov}{\mathbf{o}}
+    \newcommand{\pv}{\mathbf{p}}
+    \newcommand{\qv}{\mathbf{q}}
+    \newcommand{\rv}{\mathbf{r}}
+    \newcommand{\sv}{\mathbf{s}}
+    \newcommand{\tv}{\mathbf{t}}
+    \newcommand{\uv}{\mathbf{u}}
+    % \newcommand{\vv}{\mathbf{v}}
+    \newcommand{\wv}{\mathbf{w}}
+    \newcommand{\xv}{\mathbf{x}}
+    \newcommand{\yv}{\mathbf{y}}
+    \newcommand{\zv}{\mathbf{z}}
+    
+    % mathbf uppercase
+    \newcommand{\Av}{\mathbf{A}}
+    \newcommand{\Bv}{\mathbf{B}}
+    \newcommand{\Cv}{\mathbf{C}}
+    \newcommand{\Dv}{\mathbf{D}}
+    \newcommand{\Ev}{\mathbf{E}}
+    \newcommand{\Fv}{\mathbf{F}}
+    \newcommand{\Gv}{\mathbf{G}}
+    \newcommand{\Hv}{\mathbf{H}}
+    \newcommand{\Iv}{\mathbf{I}}
+    \newcommand{\Jv}{\mathbf{J}}
+    \newcommand{\Kv}{\mathbf{K}}
+    \newcommand{\Lv}{\mathbf{L}}
+    \newcommand{\Mv}{\mathbf{M}}
+    \newcommand{\Nv}{\mathbf{N}}
+    \newcommand{\Ov}{\mathbf{O}}
+    \newcommand{\Pv}{\mathbf{P}}
+    \newcommand{\Qv}{\mathbf{Q}}
+    \newcommand{\Rv}{\mathbf{R}}
+    \newcommand{\Sv}{\mathbf{S}}
+    \newcommand{\Tv}{\mathbf{T}}
+    \newcommand{\Uv}{\mathbf{U}}
+    \newcommand{\Vv}{\mathbf{V}}
+    \newcommand{\Wv}{\mathbf{W}}
+    \newcommand{\Xv}{\mathbf{X}}
+    \newcommand{\Yv}{\mathbf{Y}}
+    \newcommand{\Zv}{\mathbf{Z}}
+    
+    % bold greek lowercase
+    \newcommand{\alphav     }{\boldsymbol \alpha     }
+    \newcommand{\betav      }{\boldsymbol \beta      }
+    \newcommand{\gammav     }{\boldsymbol \gamma     }
+    \newcommand{\deltav     }{\boldsymbol \delta     }
+    \newcommand{\epsilonv   }{\boldsymbol \epsilon   }
+    \newcommand{\varepsilonv}{\boldsymbol \varepsilon}
+    \newcommand{\zetav      }{\boldsymbol \zeta      }
+    \newcommand{\etav       }{\boldsymbol \eta       }
+    \newcommand{\thetav     }{\boldsymbol \theta     }
+    \newcommand{\varthetav  }{\boldsymbol \vartheta  }
+    \newcommand{\iotav      }{\boldsymbol \iota      }
+    % \newcommand{\kv     }{\boldsymbol k     }
+    \newcommand{\varkappav  }{\boldsymbol \varkappa  }
+    \newcommand{\lambdav    }{\boldsymbol \lambda    }
+    \newcommand{\muv        }{\boldsymbol \mu        }
+    \newcommand{\nuv        }{\boldsymbol \nu        }
+    \newcommand{\xiv        }{\boldsymbol \xi        }
+    \newcommand{\omicronv   }{\boldsymbol \omicron   }
+    \newcommand{\piv        }{\boldsymbol \pi        }
+    \newcommand{\varpiv     }{\boldsymbol \varpi     }
+    \newcommand{\rhov       }{\boldsymbol \rho       }
+    \newcommand{\varrhov    }{\boldsymbol \varrho    }
+    \newcommand{\sigmav     }{\boldsymbol \sigma     }
+    \newcommand{\varsigmav  }{\boldsymbol \varsigma  }
+    \newcommand{\tauv       }{\boldsymbol \tau       }
+    \newcommand{\upsilonv   }{\boldsymbol \upsilon   }
+    \newcommand{\phiv       }{\boldsymbol \phi       }
+    \newcommand{\varphiv    }{\boldsymbol \varphi    }
+    \newcommand{\chiv       }{\boldsymbol \chi       }
+    \newcommand{\psiv       }{\boldsymbol \psi       }
+    \newcommand{\omegav     }{\boldsymbol \omega     }
+    
+    % bold greek uppercase
+    \newcommand{\Gammav     }{\boldsymbol \Gamma     }
+    \newcommand{\Deltav     }{\boldsymbol \Delta     }
+    \newcommand{\Thetav     }{\boldsymbol \Theta     }
+    \newcommand{\Lambdav    }{\boldsymbol \Lambda    }
+    \newcommand{\Xiv        }{\boldsymbol \Xi        }
+    \newcommand{\Piv        }{\boldsymbol \Pi        }
+    \newcommand{\Sigmav     }{\boldsymbol \Sigma     }
+    \newcommand{\Upsilonv   }{\boldsymbol \Upsilon   }
+    \newcommand{\Phiv       }{\boldsymbol \Phi       }
+    \newcommand{\Psiv       }{\boldsymbol \Psi       }
+    \newcommand{\Omegav     }{\boldsymbol \Omega     }
+
+
+    \newenvironment{Q}
+    {%
+      \clearpage
+      \item
+    }
+    {%
+      \phantom{s} %lol doesn't work
+      \bigskip
+      \textbf{Solution.}
+    }
+    \NewDocumentEnvironment{Sol}{+b}
+    {%
+    \ifshowsolution
+      \phantom{s} % Not sure if this is still needed here.
+      \bigskip
+      % The needspace keeps the "Solution" header from
+      % appearing at the bottom of a page by itself
+      {\needspace{20\baselineskip}\textbf{Solution.}}
+      \begin{tcolorbox}
+      #1
+      \end{tcolorbox}
+    \fi
+    }{}
+    
+    \NewDocumentEnvironment{SolWarning}{+b}
+    {%
+    \ifshowsolution
+      \begin{tcolorbox}
+      \textbf{Warning! Solution Version}
+      % Required empty line below for formatting
+    
+      % Custom warning would be inserted next
+      #1
+      \end{tcolorbox}
+    \fi
+    }{}
+
+    \def\hw{HW5}
+    \def\hwcode{HW5 - Programming Assignment}
+
+
+    \title{CS 446 / ECE 449 --- Homework 5}
+    \author{\emph{your NetID here}}
+    % \date{Version 2.3}
+    \date{}
+
+    \begin{document}
+        \maketitle
+
+        \noindent\textbf{Instructions.}
+        \begin{itemize}
+          \item
+            Homework is due \textbf{Friday, November 14}, at 11:59 \textbf{AM} CST; you have \textbf{3} late days in total for \textbf{all Homeworks}.
+            
+            \item The template for coding problems are available at \href{https://files.campuswire.com/228b84ef-68ea-4f6d-ac6e-c026d5b99e7b/21a87882-5704-43ac-8ec8-70e7358edabe/hw5_code_template.zip}{this link}.
+        
+          \item
+            Everyone must submit individually at gradescope under \texttt{\hw} and \texttt{\hwcode}.
+        
+          \item
+            The ``written'' submission at \texttt{\hw} \textbf{must be typed}, and submitted in any format gradescope accepts (to be safe, submit a PDF).  You may use \LaTeX, markdown, google docs, MS word, whatever you like; but it must be typed!
+        
+          \item
+            When submitting at \texttt{\hw}, Gradescope will ask you to \textbf{mark out boxes around each of your answers}; please do this precisely!
+        
+          \item
+            Please make sure your NetID is clear and large on the first page of the homework.
+        
+          \item
+            Your solution \textbf{must} be written in your own words.
+            Please see the course webpage for full \textbf{academic integrity} information.
+            You should cite any external reference you use. \textcolor{red}{The use of LLM is \textbf{not} allowed.}
+        
+          \item
+            We reserve the right to reduce the auto-graded score for
+            \texttt{\hwcode} if we detect funny business (e.g., your solution
+            lacks any algorithm and hard-codes answers you obtained from
+            someone else, or simply via trial-and-error with the autograder).
+            
+          \item
+           When submitting to \texttt{\hwcode}, only upload \texttt{hw5\_q1.py}, \texttt{hw5\_q3.py}. Additional files will be ignored.
+           
+        \end{itemize}
+      
+        
+\begin{enumerate}[font={\Large\bfseries},left=0pt]
+
+\begin{Q}
+\textbf{\Large Decision Tree (40 pt)}
+
+ Consider $\mathcal{D}=\{(\bx^{(i)}, y^{(i)})\}_{i=0}^{N-1}$ where $N \in \mathbb{N}$ and, for $i \in \{0, \dots, N - 1\}$, $\bx^{(i)} \in \mathbb{R}^D$ and $y^{(i)} \in \{ 0, \dots, C - 1 \}$ for $D, C \in \mathbb{N}$ (note: here, we adopt the convention that $0 \notin \mathbb{N}$). In words, we have a training dataset of $N$ data points, each with $D$ \emph{continuous} features and belonging to exactly one of $C$ classes. We wish to train a decision tree classifier using this dataset.
+
+We briefly discussed the decision trees for general continuous spaces. A continuous-valued decision is represented using the total order $\le$ on $\mathbb{R}$. Specifically, at each node, we will specify a feature $j$ ($j \in \{0, \dots, D - 1\}$) and also a \emph{threshold} $T$, and then create \emph{two descendant nodes} at the current node. For all data points in the current node, those with $x_j$ at most the threshold will be put into the \emph{left} child node, labeled as $[x_j \leq T]$, and those with $x_j$ strictly greater than the threshold will be put into the \emph{right} child node, labeled as $[x_j > T]$.
+
+\textbf{[Programming] (16 pt)}
+
+ In this part of the question, you will implement the training and inference of a decision tree classifier on continuous features. We have provided a template of the code in \texttt{hw5\_q1.py}. Your task is to fill out all the \texttt{TODO}s in the methods of the \texttt{DecisionTreeClassifier} class. 
+
+We provide below a description of methods related to the training of the decision tree classifier.
+\begin{itemize}
+    \item \texttt{fit} (no \texttt{TODO}): Given a training dataset, build the decision tree classifier. This is done by calling the \texttt{\_grow\_tree} method on the entire training dataset.
+    \item \texttt{\_grow\_tree}: Recursively grow the decision tree at a given node (holding a \emph{subset} of the training dataset). The depth of the node is being tracked to avoid growing too large a tree.
+    \item \texttt{\_find\_best\_split}: Given a subset of the training dataset, find the split (feature and threshold) that results in the highest information gain. Here, the candidate thresholds for a feature are all possible values of that feature in the subset.
+    \item \texttt{\_information\_gain}: Compute the information gain of a split (feature and threshold). At a parent node, there are $N_S$ samples and the class distribution is $\mathbf{p}$. A split partitions this node into a left child with $N_L$ samples and class distribution $\mathbf{p}_L$ and a right child with $N_R (= N_S - N_L)$ samples and distribution $\mathbf{p}_R$. The information gain is defined as:
+    $$
+        IG(N_S, \mathbf{p}, N_L, \mathbf{p}_L, N_R, \mathbf{p}_R) = H(\mathbf{p}) - \left( \frac{N_L}{N_S} H(\mathbf{p}_L) + \frac{N_R}{N_S} H(\mathbf{p}_R) \right)
+    $$
+    where $H$ is the impurity function.
+    \item \texttt{\_split}: Perform the split on a subset of the dataset by identifying all the indices corresponding to each of the two parts separated based on the specified feature and threshold.
+    \item \texttt{\_gini}: Given a subset of the labels, compute the Gini impurity. The lecture discussed the use of sample entropy as the impurity measure. Here, we introduced a different impurity measure: Gini impurity, with the following formula
+    $$
+        \mathrm{Gini}(\mathbf{p}) = 1 - \sum_{i = 0}^{C - 1} p_i^2
+    $$
+    where $\mathbf{p} \in [0, 1]^C$ holds the class distribution in the given subset of labels.
+    \item \texttt{\_most\_common\_label}: Given a subset of the labels, find the most common one. If there are many common labels, return the smallest index.
+\end{itemize}
+
+We provide below a description of methods related to the inference of the decision tree classifier.
+\begin{itemize}
+    \item \texttt{predict} (no \texttt{TODO}): Given query samples, make the prediction using the fitted decision tree classifier. This is done by calling the \texttt{\_traverse\_tree} method on each query sample.
+    \item \texttt{\_traverse\_tree}: Given a query sample, recursively traverse the fitted decision tree based on the split at the current node.
+\end{itemize}
+
+\textbf{[Written] (24 pt)}
+
+ Answer the following questions:
+\begin{enumerate}
+    \item  An impurity measure must be a concave function for the information gain to be non-negative. In this question, we verify that Gini is a qualified impurity measure and explain why concavity is necessary.
+    \begin{enumerate}
+        \item  Prove that the Gini impurity is a strictly concave function on $\mathbb{R}^C$. \textbf{Hint} Show that the Hessian matrix, $\nabla^2 \mathrm{Gini}(\mathbf{p})$, is negative definite. (4 pt)
+
+        (\underline{Side note} This implies that the Gini impurity function is concave on our domain of interest, which is the set of class distributions.)
+        \item  Prove that information gain is always non-negative when the impurity measure is concave. (4 pt) \textbf{Hint} Find an identity relating $\mathbf{p}$, $\mathbf{p}_L$, and $\mathbf{p}_R$ using $N_S, N_L, N_R$. Then, use Jensen's inequality in an appropriate way.
+    \end{enumerate}
+    
+    \item  As discussed in the lecture, a good impurity measure should be minimal when a node is ``pure'' (i.e., all data belongs to a single class) and maximal when a node is ``maximally impure'' (i.e., data is uniformly distributed among all classes). In this question, we verify that the Gini impurity has this desired property.
+    
+    Let $\mathbf{p} = (p_0, \dots, p_{C-1})$ be the distribution of classes in a node, where $p_i \ge 0$ and $\sum_{i=0}^{C-1} p_i = 1$.
+    \begin{enumerate}
+        \item  Prove that $\mathrm{Gini}(\mathbf{p}) = 0$ \emph{if and only if} the node is pure (i.e., $p_k = 1$ for some $k \in \{0, \dots, C-1\}$ and $p_j = 0$ for all $j \ne k$). (4 pt)
+        \item  Prove that $\mathrm{Gini}(\mathbf{p})$ is maximized when the class distribution is uniform (i.e., $p_i = 1/C$ for all $i \in \{0, \dots, C-1\}$). What is this maximum value? \textbf{Hint} Use the method of Lagrange multipliers. (4 pt)
+    \end{enumerate}
+    
+    \item  In this question, we focus on the computational aspect of the decision tree classifier.
+    \begin{enumerate}
+        \item  What is the time complexity of the \texttt{\_find\_best\_split} method in big-O notation with respect to $N_S$ (number of data points in the subset $S$ at the node), $D$ (number of features), and $C$ (number of classes)? Explain your answer. (4 pt)
+    
+        \item  Propose a different implementation that will get a better time complexity. What is the improved time complexity in big-O notation with respect to $N_S$, $D$, and $C$? Explain your answer. (4 pt)
+    \end{enumerate}
+\end{enumerate}
+
+\end{Q}
+
+\begin{tcolorbox}
+
+\end{tcolorbox}
+
+\begin{Q}
+\textbf{\Large Ensemble methods (Bagging, AdaBoost) (34 pt)}
+
+ Answer the following questions:
+
+\begin{enumerate} 
+
+\item   Fix a training dataset $\mathcal{D}$ of size $N$ for a regression task, a query point $\mathbf{x}$, and a training algorithm $\mathcal{A}$ (i.e., a function which takes a dataset and returns a trained model). We create $B$ bootstrap samples $\mathcal{D}_1, \dots, \mathcal{D}_B$ by sampling $N$ times with replacement from $\mathcal{D}$. We then train $B$ models, let $h_b = \mathcal{A}(\mathcal{D}_b)$, i.e., $h_b$ is the model trained on $\mathcal{D}_b$. The bagging predictor is the average: 
+$$
+    H_B(\mathbf{x}) = \frac{1}{B} \sum_{b=1}^B h_b(\mathbf{x})
+$$
+Note that the only source of randomness in this setup is the bootstrap sampling process (not the training dataset nor the query point).
+
+Since each learner $h_b$ is trained on a $\mathcal{D}_b$ drawn from the same bootstrap distribution from $\mathcal{D}$, all $h_b(\mathbf{x})$ are identically distributed. Let this variance be
+$$
+    \sigma^2 = \mathrm{Var}[h_b(\mathbf{x})]
+$$
+On the other hand, as discussed in the lecture, any pair of random variables $h_i(\mathbf{x})$ and $h_j(\mathbf{x})$ ($i \ne j$) are not independent because the training sets $\mathcal{D}_i$ and $\mathcal{D}_j$ are correlated (both are drawn from $\mathcal{D}$). However, all pairs have the same covariance since they are identically distributed. Let this covariance be 
+$$
+    C = \mathrm{Cov}[h_i(\mathbf{x}), h_j(\mathbf{x})]
+$$
+
+\begin{enumerate}
+
+\item Derive a formula for the variance of the bagging predictor, $\mathrm{Var}[H_B(\mathbf{x})]$, that is dependent on $B$, $\sigma^2$, and $C$. (2 pt)
+
+\item  What does $\mathrm{Var}[H_B(\mathbf{x})]$ converge to as $B \to \infty$? Answer in terms of $\sigma^2$ and $C$. (2 pt)
+
+\item  Suppose $\mathcal{A}$ is unstable, in the sense that $h_i(\mathbf{x}) \ne h_j(\mathbf{x})$ with non-zero probability. Prove that $C < \sigma^2$ and conclude that $\mathrm{Var}[H_B(\mathbf{x})] < \sigma^2$ for any $B > 1$. \textbf{Hint} Consider $Y = h_i(\mathbf{x}) - h_j(\mathbf{x})$ and compute $\mathrm{Var}[Y]$. What can you say about $\mathrm{Var}[Y]$ if $\mathcal{A}$ is unstable? (6 pt)
+
+\underline{Side note} This means that even with an unstable training algorithm, we will still get reduced variance with bagging.
+
+\end{enumerate}
+
+\item  We learned from the lecture that the AdaBoost algorithm constructs an ensemble of binary classifiers (with outputs in $\{-1, +1\}$). In this exercise, we explain the design of the AdaBoost algorithm in greater detail. 
+
+The AdaBoost algorithm builds an ensemble classifier $F_T(\mathbf{x}) = \sum_{t=1}^T \alpha_t h_t(\mathbf{x})$ by adding one learner at a time.  At step $t$, it defines $F_t(\mathbf{x}) = F_{t-1}(\mathbf{x}) + \alpha_t h_t(\mathbf{x})$ (with $F_0 = 0$) by finding $(h_t, \alpha_t)$ that minimizes the exponential loss
+$$
+    L_t = \sum_{i=1}^N \exp(-y^{(i)} F_t(\mathbf{x}^{(i)})) = \sum_{i=1}^N \exp(-y^{(i)} F_{t-1}(\mathbf{x}^{(i)})) \cdot \exp(-y^{(i)} \alpha_t h_t(\mathbf{x}^{(i)}))
+$$
+Let $D_t(i)$ be the normalized sample weights from the previous step, defined as
+$$
+    D_t(i) = \frac{\exp(-y^{(i)} F_{t-1}(\mathbf{x}^{(i)}))}{\sum_{j=1}^N \exp(-y^{(j)} F_{t-1}(\mathbf{x}^{(j)}))} = \frac{\exp(-y^{(i)} F_{t-1}(\mathbf{x}^{(i)}))}{L_{t-1}}
+$$
+(For $t = 1$, $F_0=0$, so $D_1(i) = 1/N$.)
+
+Since $L_t = L_{t-1} \cdot \left[ \sum_{i=1}^N D_t(i) \exp(-y^{(i)} \alpha_t h_t(\mathbf{x}^{(i)})) \right]$ and $L_{t-1}$ is a fixed constant, minimizing $L_t$ is equivalent to minimizing the normalized objective
+$$
+    J_t = \sum_{i=1}^N D_t(i) \exp(-y^{(i)} \alpha_t h_t(\mathbf{x}^{(i)}))
+$$
+
+\begin{enumerate}
+
+\item  Suppose the weak learner $h_t$ has been chosen to be the learner that best minimizes the weighted error $\epsilon_t$ defined by
+$$
+    \epsilon_t = \sum_{i=1}^N D_t(i) \mathbb{I}(y^{(i)} \ne h_t(\mathbf{x}^{(i)})) = \sum_{\stackrel{1 \le i \le N}{y^{(i)} \ne h_t(\mathbf{x}^{(i)})}} D_t(i)
+$$
+Assume that $\epsilon_t \in (0, 1)$. (If $\epsilon_t = 0$, the learner is perfect and we can stop. If $\epsilon_t = 1$, we can flip the learner's signs to achieve $\epsilon_t = 0$.)
+
+Prove that the optimal weight $\alpha_t$ that \emph{minimizes} the objective function $J_t$ is given by:
+$$
+    \alpha_t = \frac{1}{2} \ln\left(\frac{1 - \epsilon_t}{\epsilon_t}\right)
+$$ (6 pt)
+
+\textbf{Hint} Split $L_t$ into two parts: one for incorrectly classified samples and one for correctly classified samples. Then, try to rewrite it in terms of $\epsilon_t$. Finally, take the derivative and set it to $0$.
+
+\item  The AdaBoost algorithm updates the sample weights for the next iteration ($t+1$) using the rule:
+$$
+    D_{t+1}(i) = \dfrac{1}{Z_t} D_t(i) \exp(-y^{(i)} \alpha_t h_t(\mathbf{x}^{(i)}))
+$$
+where $Z_t$ is a normalization constant (i.e., so that $\sum_{i=1}^N D_{t+1}(i) = 1$).
+
+\begin{enumerate}
+\item  Using $\alpha_t$ from the previous part, show that $Z_t = J_t$. Derive a formula for $Z_t$ that is only dependent on $\epsilon_t$. (6 pt)
+\item  Derive a formula for $\exp(-y^{(i)} \alpha_t h_t(\mathbf{x}^{(i)}))$ in the two cases $y^{(i)} = h_t(\mathbf{x}^{(i)})$ and $y^{(i)} \ne h_t(\mathbf{x}^{(i)})$ that is only dependent on $\alpha_t$. (4 pt)
+
+\end{enumerate}
+
+\item  The training error of the final ensemble $H_T(\mathbf{x}) = \text{sign}(F_T(\mathbf{x}))$ is 
+$$
+    \epsilon_{\text{train}} = \frac{1}{N} \sum_{i=1}^N \mathbb{I}(H_T(\mathbf{x}^{(i)}) \ne y^{(i)})
+$$
+Prove that the training error of AdaBoost is exponentially bounded:
+$$
+    \epsilon_{\text{train}} \le \prod_{t=1}^T Z_t
+$$ (8 pt)
+\\\textbf{Hint} Start by showing $\mathbb{I}(H_T(\mathbf{x}^{(i)}) \ne y^{(i)}) \le \exp(-y^{(i)} F_T(\mathbf{x}^{(i)}))$. Then, see if you can relate $L_T$ to the product of $Z_t$.
+
+\underline{Side note} This implies that, if each weak learner does better than just random chance (i.e. $\epsilon_t < 0.5$), then $Z_t < 1$, and $\epsilon_\text{train} \to 0$ as $T \to \infty$. 
+
+\end{enumerate}
+
+\end{enumerate}
+
+\end{Q}
+
+\begin{tcolorbox}
+
+\end{tcolorbox}
+
+\begin{Q}
+\textbf{\Large K-Means (20 pt)}
+\begin{enumerate}
+    \item
+    Suppose we want to perform K-Means clustering on the data samples from the \textbf{below} example Fig~\ref{fig:example} to cluster them into two groups. Using the algorithm in the slides, perform two runs of the algorithm in the two following settings by showing your work for each step:
+
+\begin{enumerate}
+    \item Setting the initial centers to $\bmu_1 = [-1,0.5]$ and $\bmu_2 = [-5.5,-4.5]$. (5pt)
+    \item Setting the initial centers to $\bmu_1 = [0,-4]$ and $\bmu_2 = [-5,0]$. (5pt)
+\end{enumerate}
+\begin{figure*}[ht]
+\centering
+\includegraphics[width=0.6\textwidth, trim={0, 0, 0, 0}, clip]{decision_corrcet.jpg}
+\label{fig:example}
+\end{figure*}
+    \item 
+    Implement the K-means Algorithm (Lloyd’s algorithm) introduced in the lecture, detailed as follows. (10 pt)
+
+\input{kmeans}
+\end{enumerate}
+\end{Q}
+
+\begin{tcolorbox}
+\end{tcolorbox}
+
+
+\begin{Q}
+\textbf{\Large Kernels (44 pt)}
+
+In this problem, we want to show that new valid kernels can be made by combining existing ones.  Suppose $k_1, k_2$ are valid kernel functions. You need to show: 
+    \begin{enumerate}
+    \item
+	\begin{enumerate}
+        \item The set of valid kernels is closed with respect to the scalar product. Formally: $c k_1(\bx^{(1)}, \bx^{(2)})$ for any $c \geq 0$ would be a valid kernel. {(4 pt)}
+		\item  The set of valid kernels is closed with respect to addition. Formally: $ k_1(\bx^{(1)}, \bx^{(2)}) + k_2(\bx^{(1)}, \bx^{(2)})$ would be valid kernel.  {(6 pt)}
+		\item  The set of valid kernels is closed with respect to multiplication. Formally, $k_1(\bx^{(1)}, \bx^{(2)}) k_2(\bx^{(1)}, \bx^{(2)})$ would be valid kernel. {(6 pt)}
+        \item  The set of valid kernels is closed with composition mapping. Formally, $k_1(f(\bx^{(1)}), f(\bx^{(2)}))$ would be valid kernel, where $f: \mathbb{R}^d \rightarrow \mathbb{R}^d$ is a mapping function.  {(8 pt)}
+
+        \item The set of valid kernels is closed with exponentiation. Formally, $\exp(k_1(\bx^{(1)}, \bx^{(2)}))$ would be valid kernel.  {(8 pt)}
+    \end{enumerate}
+
+
+
+ \textbf{Hint:} You can use either of the two following methods for showing that a function $k: \mathbb{R}^d \times \mathbb{R}^d \rightarrow \mathbb{R}$ is a valid kernel function:
+    \begin{itemize}
+        \item The matrix $$K_{ij} = k(\bx^{(i)}, \bx^{(j)})$$ is symmetric and positive semidefinite for any set of vectors $\bx^{(1)}, ..., \bx^{(n)} \in \mathbb{R}^d$
+        \item $k(\bx^{(i)}, \bx^{(j)}) = \phi(\bx^{(i)})^T \phi(\bx^{(j)})$ for some transformation
+        $\phi$
+    \end{itemize}
+    
+ \textbf{Hint:}
+$$\exp(x) = \sum_{m=0}^{\infty} \frac{x^m}{m!}.
+$$
+    \item 
+    Recall that the dual problem of a hard-margin SVM is
+    \begin{equation}
+        \max_{\balpha}\sum_{i=1}^{N}\alpha_i-\frac{1}{2}\sum_{i}^{N}\sum_{j}^{N}\alpha_i\alpha_j y^{(i)}y^{(j)}\vx^{(i)^\top} \vx^{(j)}\qquad
+        \textup{s.t.}\quad
+        \alpha_i \geq 0,\ i=1,\ldots,N; \ \sum_{j=1}^N \alpha_j y^{(j)}=0
+    \end{equation}
+    Denote the optimal primal solution as $\vw^*$.
+    We define the domain $\cC=[0, \infty]^N=\{\balpha:\alpha_i\ge0\}$ for a hard-margin SVM, and $\cC=[0,C]^N=\{\balpha:0\le\alpha_i\le C\}$ for a soft-margin SVM. We can solve this dual problem by projected gradient descent, which starts from some $\balpha_0\in\cC$ (e.g., $\boldsymbol{0}$) and updates as follows:
+        \begin{align}
+            \balpha_{t+1}=\Pi_{\cC}\sbr{\balpha_t-\eta\nabla f(\balpha_t)}.
+        \end{align}
+        Here $\Pi_{\cC}[\balpha]$ is the \emph{projection} of $\balpha$ onto $\cC$, defined as the closest point to $\balpha$ in $\cC$:
+        \begin{align}
+            \Pi_{\cC}[\balpha]:=\argmin_{\balpha'\in\cC}\|\balpha'-\balpha\|_2.
+        \end{align}
+        If $\cC$ is convex, in Homework 3, we already prove that
+        \begin{align}
+            \del{\Pi_{[0,\infty)^N}[\balpha]}_i=\max\{\alpha_i,0\},\\
+            \del{\Pi_{[0,C]^N}[\balpha]}_i=\min\{\max\{0,\alpha_i\},C\}.
+        \end{align}
+        
+    \begin{enumerate}
+        \item Assume we use radial basis kernel function $k(\vx^{(i)}, \vx^{(j)}) = \exp(-\frac{1}{2}\|\vx^{(i)} -  \vx^{(j)}\|_2^2)$. If the test point $\vx$ is far away from any training point $\vx^{(i)}$, prove that $\vw^{*{\top}} \phi(\vx) + b \approx b$. The definition of $\vw^*$ is the same as above. (6 pt)
+
+
+        \item On the area $[-8,8]\times[-8,8]$, plot the contour lines of the following kernel SVMs, trained on the XOR data. Different kernels and XOR data are \textbf{provided in} hw5\_utils.py. Learning rate $0.1$ and $10000$ steps should be enough. To draw the contour lines, you can use \texttt{hw5\_utils.svm\_contour()}.
+        \begin{itemize}
+            \item The polynomial kernel with degree $3$.
+            \item The RBF kernel with $\sigma=1$. 
+            \item The RBF kernel with $\sigma=2$.
+            \item The RBF kernel with $\sigma=5$.
+        \end{itemize}
+        Include these four plots in your \textbf{written submission}. (8 pt)
+\end{enumerate}
+
+\end{enumerate}
+
+\end{Q}
+
+\begin{tcolorbox}
+
+\end{tcolorbox}
+
+\end{enumerate}
+
+\end{document}

@@ -1,0 +1,42 @@
+\begin{algorithm}[H]
+\caption{K-means Clustering (Lloyd’s Algorithm)}
+\label{alg:kmeans}
+\begin{algorithmic}[1]
+\REQUIRE Dataset $\{x^{(i)}\}_{i=1}^{N}$, number of clusters $k$ (i.e., \texttt{n\_clusters})
+\ENSURE Cluster centers $\{\mu_1, \mu_2, \ldots, \mu_k\}$ and assignments $\{C_1, C_2, \ldots, C_k\}$
+
+\vspace{4pt}
+\STATE \textbf{Initialization:} Randomly choose $k$ examples as initial cluster centers
+\[
+\mu_1^{(0)},\, \mu_2^{(0)},\, \ldots,\, \mu_k^{(0)}.
+\]
+
+\vspace{3pt}
+\STATE \textbf{Iterate} for $t = 0, 1, 2, \ldots$ until convergence:
+\begin{enumerate}
+    \item[\textbf{(1)}] \textbf{Assignment Step:} \\
+    Assign each data point $x^{(i)}$ to its nearest cluster center:
+    \[
+    C_\ell = \left\{\, x^{(i)} : 
+    \|x^{(i)} - \mu_\ell^{(t)}\|_2^2 
+    \leq 
+    \|x^{(i)} - \mu_j^{(t)}\|_2^2,\;
+    \forall j \in \{1, \ldots, k\} \,\right\}
+    \]
+    
+    \item[\textbf{(2)}] \textbf{Update Step:} \\
+    Recompute each cluster centroid as the mean of its assigned points:
+    \[
+    \mu_\ell^{(t+1)} = 
+    \frac{1}{|C_\ell|} 
+    \sum_{x^{(i)} \in C_\ell} x^{(i)},
+    \quad \ell = 1, 2, \ldots, k
+    \]
+\end{enumerate}
+
+\vspace{3pt}
+\STATE \textbf{Convergence:} Stop when cluster assignments no longer change.
+\STATE \textbf{Output:} Final cluster centers $\{\mu_\ell\}$ and assignments $\{C_\ell\}$.
+
+\end{algorithmic}
+\end{algorithm}
