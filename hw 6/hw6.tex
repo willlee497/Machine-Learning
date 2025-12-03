@@ -1,0 +1,495 @@
+\documentclass{article}
+    \usepackage{booktabs}
+    \usepackage[margin=1in]{geometry}
+    \usepackage{hyperref}
+    \usepackage{amsmath}
+    \usepackage{amsfonts,amssymb,amsthm,commath,dsfont}
+    \usepackage{bm}
+    \usepackage{enumitem}
+    \usepackage{framed}
+    \usepackage{xspace}
+    \usepackage{microtype}
+    \usepackage{float}
+    \usepackage[round]{natbib}
+    \usepackage{cleveref}
+    \usepackage[dvipsnames]{xcolor}
+    \usepackage{graphicx}
+    \usepackage{listings}
+    \usepackage[breakable]{tcolorbox}
+    \tcbset{breakable}
+    \usepackage{mathtools}
+    \usepackage{autonum}
+    \usepackage{comment}
+    \usepackage{hyperref}
+    \usepackage{amsmath}
+
+    \def\b1{\boldsymbol{1}}
+    \newcommand{\colbar}{\rule[-3mm]{.3mm}{1.5em}}
+    \newcommand{\rowbar}{\rule[.5ex]{1.5em}{.3mm}}
+    \DeclareMathOperator{\rank}{rank}
+    \def\balpha{\boldsymbol{\alpha}}
+
+    % following loops. stolen from djhsu
+    \def\ddefloop#1{\ifx\ddefloop#1\else\ddef{#1}\expandafter\ddefloop\fi}
+    % \bbA, \bbB, ...
+    \def\ddef#1{\expandafter\def\csname bb#1\endcsname{\ensuremath{\mathbb{#1}}}}
+    \ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+    
+    % \cA, \cB, ...
+    \def\ddef#1{\expandafter\def\csname c#1\endcsname{\ensuremath{\mathcal{#1}}}}
+    \ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZ\ddefloop
+    
+    % \vA, \vB, ..., \va, \vb, ...
+    \def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{#1}}}}
+    \ddefloop ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz\ddefloop
+    
+    % \valpha, \vbeta, ...,  \vGamma, \vDelta, ...,
+    \def\ddef#1{\expandafter\def\csname v#1\endcsname{\ensuremath{\boldsymbol{\csname #1\endcsname}}}}
+    \ddefloop {alpha}{beta}{gamma}{delta}{epsilon}{varepsilon}{zeta}{eta}{theta}{vartheta}{iota}{kappa}{lambda}{mu}{nu}{xi}{pi}{varpi}{rho}{varrho}{sigma}{varsigma}{tau}{upsilon}{phi}{varphi}{chi}{psi}{omega}{Gamma}{Delta}{Theta}{Lambda}{Xi}{Pi}{Sigma}{varSigma}{Upsilon}{Phi}{Psi}{Omega}{ell}\ddefloop
+
+    \newcommand\T{{\scriptscriptstyle\mathsf{T}}}
+    \def\diag{\textup{diag}}
+    
+    \DeclareMathOperator*{\argmin}{arg\,min}
+    \DeclareMathOperator*{\argmax}{arg\,max}
+
+    \def\SPAN{\textup{span}}
+    \def\tu{\textup{u}}
+    \def\R{\mathbb{R}}
+    \def\E{\mathbb{E}}
+    \def\Z{\mathbb{Z}}
+    \def\be{\mathbf{e}}
+    \def\nf{\nabla f}
+    \def\veps{\varepsilon}
+    \def\cl{\textup{cl}}
+    \def\inte{\textup{int}}
+    \def\dom{\textup{dom}}
+    \def\Rad{\textup{Rad}}
+    \def\lsq{\ell_{\textup{sq}}}
+    \def\hcR{\widehat{\cR}}
+    \def\hcRl{\hcR_\ell}
+    \def\cRl{\cR_\ell}
+    \def\hcE{\widehat{\cE}}
+    \def\cEl{\cE_\ell}
+    \def\hcEl{\hcE_\ell}
+    \def\eps{\epsilon}
+    \def\1{\mathds{1}}
+    \newcommand{\red}[1]{{\color{red} #1}}
+    \newcommand{\blue}[1]{{\color{blue} #1}}
+    \def\srelu{\sigma_{\textup{r}}}
+    \def\vsrelu{\vec{\sigma_{\textup{r}}}}
+    \def\vol{\textup{vol}}
+
+    \newcommand{\ip}[2]{\left\langle #1, #2 \right \rangle}
+    \newcommand{\mjt}[1]{{\color{blue}\emph\textbf{[M:}~#1~\textbf{]}}}
+    \newcommand{\sahand}[1]{{\color{green}\emph\textbf{[Sah:}~#1~\textbf{]}}}
+
+    \newtheorem{fact}{Fact}
+    \newtheorem{lemma}{Lemma}
+    \newtheorem{claim}{Claim}
+    \newtheorem{proposition}{Proposition}
+    \newtheorem{theorem}{Theorem}
+    \newtheorem{corollary}{Corollary}
+    \newtheorem{condition}{Condition}
+    \theoremstyle{definition}
+    \newtheorem{definition}{Definition}
+    \theoremstyle{remark}
+    \newtheorem{remark}{Remark}
+    \newtheorem{example}{Example}
+            \newcommand{\bx}{{\boldsymbol x}}
+            \newcommand{\ba}{{\boldsymbol a}}
+            \newcommand{\bb}{{\boldsymbol b}}
+    % mathcal
+    \newcommand{\Ac}{\mathcal{A}}
+    \newcommand{\Bc}{\mathcal{B}}
+    \newcommand{\Cc}{\mathcal{C}}
+    \newcommand{\Dc}{\mathcal{D}}
+    \newcommand{\Ec}{\mathcal{E}}
+    \newcommand{\Fc}{\mathcal{F}}
+    \newcommand{\Gc}{\mathcal{G}}
+    \newcommand{\Hc}{\mathcal{H}}
+    \newcommand{\Ic}{\mathcal{I}}
+    \newcommand{\Jc}{\mathcal{J}}
+    \newcommand{\Kc}{\mathcal{K}}
+    \newcommand{\Lc}{\mathcal{L}}
+    \newcommand{\Mc}{\mathcal{M}}
+    \newcommand{\Nc}{\mathcal{N}}
+    \newcommand{\Oc}{\mathcal{O}}
+    \newcommand{\Pc}{\mathcal{P}}
+    \newcommand{\Qc}{\mathcal{Q}}
+    \newcommand{\Rc}{\mathcal{R}}
+    \newcommand{\Sc}{\mathcal{S}}
+    \newcommand{\Tc}{\mathcal{T}}
+    \newcommand{\Uc}{\mathcal{U}}
+    \newcommand{\Vc}{\mathcal{V}}
+    \newcommand{\Wc}{\mathcal{W}}
+    \newcommand{\Xc}{\mathcal{X}}
+    \newcommand{\Yc}{\mathcal{Y}}
+    \newcommand{\Zc}{\mathcal{Z}}
+    
+    % mathbb
+    \newcommand{\bxup}[1]{{\bx}^{({#1})}}
+    \newcommand{\Ab}{\mathbb{A}}
+    \newcommand{\Bb}{\mathbb{B}}
+    \newcommand{\Cb}{\mathbb{C}}
+    \newcommand{\Db}{\mathbb{D}}
+    \newcommand{\Eb}{\mathbb{E}}
+    \newcommand{\Fb}{\mathbb{F}}
+    \newcommand{\Gb}{\mathbb{G}}
+    \newcommand{\Hb}{\mathbb{H}}
+    \newcommand{\Ib}{\mathbb{I}}
+    \newcommand{\Jb}{\mathbb{J}}
+    \newcommand{\Kb}{\mathbb{K}}
+    \newcommand{\Lb}{\mathbb{L}}
+    \newcommand{\Mb}{\mathbb{M}}
+    \newcommand{\Nb}{\mathbb{N}}
+    \newcommand{\Ob}{\mathbb{O}}
+    \newcommand{\Pb}{\mathbb{P}}
+    \newcommand{\Qb}{\mathbb{Q}}
+    \newcommand{\Rb}{\mathbb{R}}
+    \newcommand{\Sb}{\mathbb{S}}
+    \newcommand{\Tb}{\mathbb{T}}
+    \newcommand{\Ub}{\mathbb{U}}
+    \newcommand{\Vb}{\mathbb{V}}
+    \newcommand{\Wb}{\mathbb{W}}
+    \newcommand{\Xb}{\mathbb{X}}
+    \newcommand{\Yb}{\mathbb{Y}}
+    \newcommand{\Zb}{\mathbb{Z}}
+    
+    % mathbf lowercase
+    \newcommand{\av}{\mathbf{a}}
+    \newcommand{\bv}{\mathbf{b}}
+    \newcommand{\cv}{\mathbf{c}}
+    \newcommand{\dv}{\mathbf{d}}
+    \newcommand{\ev}{\mathbf{e}}
+    \newcommand{\fv}{\mathbf{f}}
+    \newcommand{\gv}{\mathbf{g}}
+    \newcommand{\hv}{\mathbf{h}}
+    \newcommand{\iv}{\mathbf{i}}
+    \newcommand{\jv}{\mathbf{j}}
+    \newcommand{\kv}{\mathbf{k}}
+    \newcommand{\lv}{\mathbf{l}}
+    \newcommand{\mv}{\mathbf{m}}
+    \newcommand{\nv}{\mathbf{n}}
+    \newcommand{\ov}{\mathbf{o}}
+    \newcommand{\pv}{\mathbf{p}}
+    \newcommand{\qv}{\mathbf{q}}
+    \newcommand{\rv}{\mathbf{r}}
+    \newcommand{\sv}{\mathbf{s}}
+    \newcommand{\tv}{\mathbf{t}}
+    \newcommand{\uv}{\mathbf{u}}
+    % \newcommand{\vv}{\mathbf{v}}
+    \newcommand{\wv}{\mathbf{w}}
+    \newcommand{\xv}{\mathbf{x}}
+    \newcommand{\yv}{\mathbf{y}}
+    \newcommand{\zv}{\mathbf{z}}
+    
+    % mathbf uppercase
+    \newcommand{\Av}{\mathbf{A}}
+    \newcommand{\Bv}{\mathbf{B}}
+    \newcommand{\Cv}{\mathbf{C}}
+    \newcommand{\Dv}{\mathbf{D}}
+    \newcommand{\Ev}{\mathbf{E}}
+    \newcommand{\Fv}{\mathbf{F}}
+    \newcommand{\Gv}{\mathbf{G}}
+    \newcommand{\Hv}{\mathbf{H}}
+    \newcommand{\Iv}{\mathbf{I}}
+    \newcommand{\Jv}{\mathbf{J}}
+    \newcommand{\Kv}{\mathbf{K}}
+    \newcommand{\Lv}{\mathbf{L}}
+    \newcommand{\Mv}{\mathbf{M}}
+    \newcommand{\Nv}{\mathbf{N}}
+    \newcommand{\Ov}{\mathbf{O}}
+    \newcommand{\Pv}{\mathbf{P}}
+    \newcommand{\Qv}{\mathbf{Q}}
+    \newcommand{\Rv}{\mathbf{R}}
+    \newcommand{\Sv}{\mathbf{S}}
+    \newcommand{\Tv}{\mathbf{T}}
+    \newcommand{\Uv}{\mathbf{U}}
+    \newcommand{\Vv}{\mathbf{V}}
+    \newcommand{\Wv}{\mathbf{W}}
+    \newcommand{\Xv}{\mathbf{X}}
+    \newcommand{\Yv}{\mathbf{Y}}
+    \newcommand{\Zv}{\mathbf{Z}}
+    
+    % bold greek lowercase
+    \newcommand{\alphav     }{\boldsymbol \alpha     }
+    \newcommand{\betav      }{\boldsymbol \beta      }
+    \newcommand{\gammav     }{\boldsymbol \gamma     }
+    \newcommand{\deltav     }{\boldsymbol \delta     }
+    \newcommand{\epsilonv   }{\boldsymbol \epsilon   }
+    \newcommand{\varepsilonv}{\boldsymbol \varepsilon}
+    \newcommand{\zetav      }{\boldsymbol \zeta      }
+    \newcommand{\etav       }{\boldsymbol \eta       }
+    \newcommand{\thetav     }{\boldsymbol \theta     }
+    \newcommand{\varthetav  }{\boldsymbol \vartheta  }
+    \newcommand{\iotav      }{\boldsymbol \iota      }
+    % \newcommand{\kv     }{\boldsymbol k     }
+    \newcommand{\varkappav  }{\boldsymbol \varkappa  }
+    \newcommand{\lambdav    }{\boldsymbol \lambda    }
+    \newcommand{\muv        }{\boldsymbol \mu        }
+    \newcommand{\nuv        }{\boldsymbol \nu        }
+    \newcommand{\xiv        }{\boldsymbol \xi        }
+    \newcommand{\omicronv   }{\boldsymbol \omicron   }
+    \newcommand{\piv        }{\boldsymbol \pi        }
+    \newcommand{\varpiv     }{\boldsymbol \varpi     }
+    \newcommand{\rhov       }{\boldsymbol \rho       }
+    \newcommand{\varrhov    }{\boldsymbol \varrho    }
+    \newcommand{\sigmav     }{\boldsymbol \sigma     }
+    \newcommand{\varsigmav  }{\boldsymbol \varsigma  }
+    \newcommand{\tauv       }{\boldsymbol \tau       }
+    \newcommand{\upsilonv   }{\boldsymbol \upsilon   }
+    \newcommand{\phiv       }{\boldsymbol \phi       }
+    \newcommand{\varphiv    }{\boldsymbol \varphi    }
+    \newcommand{\chiv       }{\boldsymbol \chi       }
+    \newcommand{\psiv       }{\boldsymbol \psi       }
+    \newcommand{\omegav     }{\boldsymbol \omega     }
+    
+    % bold greek uppercase
+    \newcommand{\Gammav     }{\boldsymbol \Gamma     }
+    \newcommand{\Deltav     }{\boldsymbol \Delta     }
+    \newcommand{\Thetav     }{\boldsymbol \Theta     }
+    \newcommand{\Lambdav    }{\boldsymbol \Lambda    }
+    \newcommand{\Xiv        }{\boldsymbol \Xi        }
+    \newcommand{\Piv        }{\boldsymbol \Pi        }
+    \newcommand{\Sigmav     }{\boldsymbol \Sigma     }
+    \newcommand{\Upsilonv   }{\boldsymbol \Upsilon   }
+    \newcommand{\Phiv       }{\boldsymbol \Phi       }
+    \newcommand{\Psiv       }{\boldsymbol \Psi       }
+    \newcommand{\Omegav     }{\boldsymbol \Omega     }
+
+    \newenvironment{Q}
+    {%
+      \clearpage
+      \item
+    }
+    {%
+      \phantom{s} %lol doesn't work
+      \bigskip
+      \textbf{Solution.}
+    }
+
+    \def\hw{HW6}
+    \def\hwcode{HW6-Programming Assignment}
+
+
+    \title{CS 446 / ECE 449 --- Homework 6}
+    \author{\emph{your NetID here}}
+    % \date{Version 2.3}
+    \date{}
+
+    \begin{document}
+        \maketitle
+
+        \noindent\textbf{Instructions.}
+        \begin{itemize}
+          \item
+            Homework is due \textbf{Friday December 5th}, at 11:59 \textbf{PM} CST; you have \textbf{3} late days in total for \textbf{all Homeworks}.
+                    
+          \item
+            Everyone must submit individually at gradescope under \texttt{\hw} and \texttt{\hwcode}.
+        
+          \item
+            The ``written'' submission at \texttt{\hw} \textbf{must be typed}, and submitted in any format gradescope accepts (to be safe, submit a PDF).  You may use \LaTeX, markdown, google docs, MS word, whatever you like; but it must be typed!
+        
+          \item
+            When submitting at \texttt{\hw}, Gradescope will ask you to \textbf{mark out boxes around each of your answers}; please do this precisely!
+        
+          \item
+            Please make sure your NetID is clear and large on the first page of the homework.
+        
+          \item
+            Your solution \textbf{must} be written in your own words and you may not consult LLMs.
+            Please see the course webpage for full \textbf{academic integrity} information.
+            You should cite any external reference you use.
+        
+          \item
+            We reserve the right to reduce the auto-graded score for
+            \texttt{\hwcode} if we detect funny business (e.g., your solution
+            lacks any algorithm and hard-codes answers you obtained from
+            someone else, or simply via trial-and-error with the autograder).
+            
+          \item
+           When submitting to \texttt{\hwcode}, only upload \texttt{hw6\_q1.py}, \texttt{hw6\_q3\_autograd.py}, \texttt{hw6\_q3\_nn.py}, \texttt{hw6\_q3\_optim.py}, and \texttt{hw6\_q3\_utils.py}. Additional files will be ignored.
+           
+        \end{itemize}
+
+        
+\begin{enumerate}[font={\Large\bfseries},left=0pt]
+
+\begin{Q}
+\textbf{\Large PCA (30 pt)}\\
+
+\begin{enumerate}
+    \item (5 pt) Use SVD to compute the principal components ($k = 2$) of this matrix.
+     \[
+  \begin{bmatrix}
+    5 & 1 & 1 \\
+    1 & 5 & -1
+  \end{bmatrix}
+\]
+    \item (2 pt) How would the resulting ``principal components" differ if you didn't center the matrix?
+    
+\end{enumerate}
+In lecture, we learned that PCA is equivalent to maximizing the variances of datapoint projections and minimizing the error of the projections. In this problem, we will show the equivalences of various interpretations of PCA.
+To do so, assume you are given a centered data matrix $\bm X \in \mathbb{R}^{d \times N}$, where each of the $N$ columns $\bm{x}^{(i)}$ in $\bm X$ are $d$-dimensional datapoints.
+\begin{enumerate}[resume]
+    \item You have a subspace $\mathcal{S} = \{\mathbf{b} + v\mathbf{u} : v \in \mathbb{R}\}$, where $\mathbf{b}$ is a vector of length $d$ ($\mathbf{b} \in \mathbb{R}^d$) and $\mathbf{u}$ is a unit vector ($\mathbf{u}^\top\mathbf{u} = 1$).  
+    \begin{enumerate}
+        \item (2 pt) Derive the formula for $\widetilde{x}$, the projection of $x$ onto $\mathcal{S}$, in terms of $\mathbf{b}$ and $\mathbf{u}$.
+        \item (3 pt) Derive the minimal squared distance $||\widetilde{x} - x||_2^2$ in terms of $x$, $\mathbf{b}$, and $\mathbf{u}$.
+    \end{enumerate}
+
+    \item (3 pt) What is the formula for the mean squared variance of $\bm X$ in a certain direction? How can you compute the direction of maximal variance of $\bm X$?
+    
+    \item (5 pt) Let's prove that the two definitions from lecture--maximizing the variances of the points projected onto a line and minimizing the errors between the points and their projections--are equivalent.
+    
+    \item (5 pt) Now, prove that finding a rank 1 approximation of the matrix $\bm X$ is equivalent to selecting the subspace $\mathcal{S}$ that maximizes the variances of the projected points.
+    
+    \textit{Hint 1:} Consider how to express a rank 1 matrix
+    
+    \textit{Hint 2:} Look into the properties of the Frobenius norm.
+
+\end{enumerate}
+
+Since PCA is equivalent to minimizing reconstruction error, a linear autoencoder optimized using gradient descent can effectively recover the subspace spanned by PCA components (up to a rotation/reflection).
+
+\begin{enumerate}[resume]
+    \item (5 pt) Implement \texttt{hw6\_q1.py} to empirically verify this. The output of your encoder may not be directly aligned with the subspace spanned by PCA components. However, assuming the autoencoder is trained correctly and its latent space spans the same subspace of the top $k$ PCA components, you can recover the transformation from the encoder output to PCA components by employing simple least squares. After the transformation, the output of your encoder should align with the PCA components. A Jupyter notebook \texttt{hw6.ipynb} is provided for you to test your implementation.
+
+    \textbf{Hint:} You should not use two separate linear layers to implement the encoder and decoder.
+    
+\end{enumerate}
+\end{Q}
+
+
+\begin{Q}
+\textbf{\Large Variational Auto-Encoders (25 pt)}\\
+
+We are training a variational auto-encoder (VAE). It consists of the following parts: the input vector $\vx$, the latent vector $\vz$, the encoder that models the probability $q_{\phi}(\vz|\vx)$, and the decoder that models $p_{\theta}(\vx|\vz)$. Based on these notations, let's look at several problems:
+
+\begin{enumerate}
+
+\item We assume the latent vector $\vz \in \mathbb{R}^{2}$ follows a multi-variate Gaussian distribution $\mathcal{N}$. Please compute the output dimension of the encoder $q_{\phi}(\vz|\vx)$ under the following cases and briefly explain why. (If ``output dimension'' is not clear enough for you, think of it as ``how many real numbers $r\in \mathbb{R}$ are needed to output for the sampling of latent vectors.'')
+
+\begin{itemize}
+    \item (2 pt) We assume $\mathcal{N}$ has an \textbf{identity matrix} as the covariance matrix.
+    \item (2 pt) We assume $\mathcal{N}$ has an \textbf{diagonal matrix} as the covariance matrix.
+\end{itemize}
+
+\item
+We then consider the problems related to the understanding of KL-Divergence.
+
+\begin{enumerate}
+    \item (5 pt) Using the inequality of $\log(x) \leq x - 1$, prove that $D_{KL}(p(\vx), q(\vx))\ge 0$ holds for two arbitrary distributions $p(\vx)$ and $q(\vx)$.
+    
+    \item (7 pt) Consider a binary classification problem with input vectors $\vx$ and labels $y\in\{0, 1\}$. The distribution of the ground truth label is denoted as $P(y)$. The expression of $P(y)$ is as Eq~\ref{eq:gt}, where $y_{gt}$ is the ground truth label.
+    \begin{equation}
+        P(y=y_{gt})=1, P(y=1-y_{gt})=0
+        \label{eq:gt}
+    \end{equation}
+    Suppose we are trying to predict the label of $\vx$ with a linear model $\vw$ and sigmoid function, then the distribution of $y$ is denoted as $Q(y)$ and computed as Eq.~\ref{eq:sigmoid}.
+    \begin{equation}
+        Q(y=0|\vx)=\frac{1}{1+\exp{(-\vw^\top \vx)}},\quad Q(y=1|\vx)=\frac{\exp{(-\vw^\top \vx)}}{1+\exp{(-\vw^\top \vx)}}
+        \label{eq:sigmoid}
+    \end{equation}
+    
+    With the above information, compute the KL Divergence between the distributions of $P(y)$ and $Q(y|\vx)$, specifically $D_{KL}(P(y)\| Q(y|\vx))=\mathbb{E}_{y\sim P(y)}[\log\frac{P(y)}{Q(y|\vx)}$]. 
+    
+    Expand your solution to the clearest form. To get full credits, you may only use $y_{gt}, \vw, \vx$ and related constants in your expression.
+\end{enumerate}
+
+\item VAE is a special branch of generative method in sampling the latent vectors $\widetilde{\vz}$ from $q_{\phi}(\vz|\vx)$ instead of directly regressing the values of $\vz$. Read an example implementation of VAE at \url{https://github.com/AntixK/PyTorch-VAE/blob/master/models/vanilla_vae.py} and answer the following questions:
+
+\begin{enumerate}
+    \item (1 pt) Find the functions and lines related to the sampling of $\widetilde{\vz}$ from $q_{\phi}(\vz|\vx)$. Specifying the names of the functions and the related lines can lead to full credits. Please note that if your range is too broad (in the extreme case, covering every line in the file) we cannot give your full credit.
+    
+    \item (5 pt)
+    Suppose our latent variable is $\vz\in\mathbb{R}^{2}$ sampled from a Gaussian distribution with mean $\vmu\in\mathbb{R}^2$ and a diagonal covariance matrix $\vSigma=\mathtt{Diag}\{\sigma_1^2, \sigma_2^2\}$. Then another random variable ${\bm \varepsilon}\in\mathbb{R}^2$ is sampled from a Gaussian distribution $\mathcal{N}(0, \vI)$. Show that $\vV = [\sigma_1, \sigma_2]^\top \odot {\bm \varepsilon} + \vmu$ follows the same distribution as $\vz$. ($\odot$ denotes element-wide product; $\mathcal{N}(0, \vI)$ denotes the multi-variate Gaussian with zero mean and identity matrix as covariance.)
+    
+    \item (2 pt)
+    Under the same setting of the Question ii, we can sample the latent vector $\widetilde{\vz}$ by the process $\widetilde{\vz}=[\sigma_1, \sigma_2]^\top \odot \widetilde{{\bm \varepsilon}} + \vmu$, where $\widetilde{{\bm \varepsilon}}$ is a sampled random variable from $\mathcal{N}(0, \vI)$. Consider the process of training, where we apply back-propagation to train the neural networks. Given the gradient on $\widetilde{\vz}$ as $\widetilde{\vg}\in\mathbb{R}^2$, which can be written as $[\widetilde{g}_1, \widetilde{g}_2]^\top$. \textbf{What are the gradients of the output of the encoder: $\vmu, \sigma_1, \sigma_2$?} (Assume the KL-Divergence loss is not considered in this part.)
+    
+    \textbf{Note:} To get full credit, you may use any constants and the variables $\widetilde{\bm \varepsilon}=[\widetilde{\varepsilon_1}, \widetilde{\varepsilon_2}]$, $\widetilde{\vg}=[\widetilde{g}_1, \widetilde{g}_2]^\top$, and $\vmu, \sigma_1, \sigma_2$.
+    
+    \item (1 pt) After reading the code, explain why we sample $\widetilde{\vz}$ with $\mathcal{N}(0, 1)$, instead of directly generating the values.
+\end{enumerate}
+
+\end{enumerate}
+
+\end{Q}
+
+\begin{Q}
+\textbf{\Large Neural Networks (29 pt)}
+
+In this problem, you will build a simple neural network framework from scratch, featuring a PyTorch-like API. At the core of popular deep learning frameworks such as PyTorch, TensorFlow, JAX, etc, are the automatic differentiation engines that compute gradients of common functions. During training, the losses are backpropagated through the network, and the resulting gradients are used to update the network parameters. You will implement several common functions, such as sigmoid activation and binary cross-entropy, as well as standard layers, such as fully connected (linear) layers, to build a simple multi-layer perceptron (MLP).
+
+You must submit the following files to \textbf{Gradescope}: 
+\begin{itemize}
+    \item \texttt{hw6\_q3\_autograd.py}
+    \item \texttt{hw6\_q3\_nn.py}
+    \item \texttt{hw6\_q3\_optim.py}
+    \item \texttt{hw6\_q3\_utils.py}
+\end{itemize}
+
+Do not submit the Jupyter notebook \texttt{hw6.ipynb} to Gradescope, as it will not be evaluated. The notebook is provided solely for you to test your implementation.
+
+\textbf{[Written part]} (10 pt)
+
+\begin{enumerate} 
+    \item \textbf{Manual backpropagation.} 
+    
+    To serve as a reference for your implementation, you will first manually perform backpropagation with a simple MLP. Consider a two-layer MLP with first layer weight $\textbf{w} = [w_0, w_1, w_2]$, second layer weight $\textbf{h} = [h_0, h_1]$. A ReLU activation is used for the first layer output, while no activation is used for the second layer output. Note that $w_0$ and $h_0$ are the bias terms. Each weight is initialized to 1. The dataset consists of 2 input-label pairs: $\{\bm x^{(0)}=[0, 1]^\intercal, y^{(0)}=1\}$  and $\{\bm x^{(1)}=[1, 0]^\intercal, y^{(1)}=0\}$. The MLP is trained on this dataset for 2 steps (1st step uses $\bm x^{(0)}$, 2nd step uses $\bm x^{(1)}$) and is evaluated using squared error $L(y, \widehat{y})=(\widehat{y}-y)^2$. The neural network is optimized with gradient descent with a learning rate of 0.05.
+
+    Demonstrate your step-by-step backpropagation calculation for the first 2 training steps. Round your results up to 4 decimal digits. 
+    \begin{enumerate}
+        \item (1.5 pt) First training step: What is the gradient (derivative) for $w_0, w_1, w_2, h_0, h_1$?
+        \item (1.5 pt) First training step: What is the updated value for $w_0, w_1, w_2, h_0, h_1$?
+        \item (1.5 pt) Second training step: What is the gradient (derivative) for $w_0, w_1, w_2, h_0, h_1$?
+        \item (1.5 pt) Second training step: What is the updated value for $w_0, w_1, w_2, h_0, h_1$?
+    \end{enumerate}
+
+    \item \textbf{Gradient of common functions.} 
+    
+    The sigmoid activation $\sigma(z)$ and the binary cross-entropy loss $L(y, \widehat{y})$ is defined as:
+    \begin{equation}
+        \sigma(z) = \frac{1}{1+e^{-z}} \qquad \text{and} \qquad L(y, \widehat{y}) = - y \log \widehat{y} - (1-y)\log(1-\widehat{y})
+    \end{equation}
+    where $\widehat{y}=\sigma(f(x))$ is the probability-valued output of neural network $f$. In practice, the sigmoid and binary cross-entropy loss are fused into one operation for numerical stability and efficiency (i.e, \texttt{BCEWithLogitsLoss} in PyTorch). Derive:
+    \begin{enumerate}
+        \item (1.5 pt) The gradient of $\sigma(z)$ with respect to its input $z$.
+        \item (2.5 pt) The simplified binary cross-entropy $L(y, \sigma(z))$ with respect to the logit $z=f(x)$ (i.e, raw, unnormalized neural network output) and the gradient of $L(y, \sigma(z))$ with respect to the $z$.
+    \end{enumerate}
+
+\end{enumerate}
+
+\textbf{[Programming part]} (19 pt)
+
+\begin{enumerate}[resume]
+    \item \textbf{Reverse-mode automatic differentiation. Implement \texttt{hw6\_q4\_autograd.py}}. 
+    
+    You are \textbf{not allowed} to use any external libraries (Numpy, PyTorch, etc.) for this question. You are \textbf{allowed} to use the provided numerically stable \texttt{sigmoid} and \texttt{log\_sigmoid} functions.
+
+    For a simple 2-layer MLP, we already have to perform lots of manual computation. In popular neural network frameworks, this gradient computation is usually handled by reverse-mode automatic differentiation. These engines perform gradient calculation by maintaining a "computation graph" (represented by a directed acyclic graph (DAG)) that records all operations that lead to the output. 
+    
+    \begin{figure}[!ht]
+        \centering
+        \includegraphics[width=0.35\linewidth]{computation-graph.png}
+    \end{figure}
+
+    Consider the root node as $f$, we can do a depth-first traversal and obtain the following order $x_1, x_2, u_1, u_2, u_3, f$. Reversing this order to obtain the backpropagation order $f, u_3, u_2, u_1, x_2, x_1$. We will implement our own automatic differentiation module by chopping the neural network into its smallest unit, which is an individual scalar. The graph traversal mechanism has been provided. You would only need to implement the \texttt{forward} and \texttt{backward} methods for each operation.
+    
+    \item \textbf{Neural network. Implement \texttt{hw6\_q3\_nn.py} and \texttt{hw6\_q3\_optim.py}}.
+    
+    You are \textbf{not allowed} to use any external libraries (Numpy, PyTorch, etc.) for this question. 
+    
+    \item \textbf{Fit everything together. Implement \texttt{hw6\_q4\_utils.py}}. 
+    
+     A Jupyter notebook \texttt{hw6.ipynb} is provided for you to test your implementation against the PyTorch implementation. Your results should be very close to the PyTorch implementation.
+
+\end{enumerate}
+
+\end{Q}
+
+\end{enumerate}
+\end{document}
